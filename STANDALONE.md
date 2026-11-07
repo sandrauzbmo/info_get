@@ -13,6 +13,9 @@ cd info_get
 account credential reader, launcher or guard handover. Keepalive, if needed,
 is managed separately. Stop an interactive run with Ctrl+C.
 
+No miner log file is created by default. Direct runs print to the terminal;
+the background installer discards standard output and standard error.
+
 For an entry check without mining or network connections:
 
 ```sh

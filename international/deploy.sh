@@ -19,7 +19,7 @@ def directory(path):
  if not stat.S_ISDIR(st.st_mode) or st.st_uid!=os.geteuid() or st.st_mode&0o077:raise SystemExit('Output directory must be owner-only')
 directory(root)
 name=sys.argv[4]
-reserved={'start','key','data','1.key','environment','info.txt','run-state.json','international.data','international.README.md','international.release.json','international-run-state.json','international-miner.log'}
+reserved={'start','key','data','1.key','environment','info.txt','run-state.json','international.data','international.README.md','international.release.json','international-run-state.json'}
 if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,63}',name) or name.lower() in {v.lower() for v in reserved}:raise SystemExit('Invalid or conflicting output filename')
 if os.path.lexists(root/name):raise SystemExit('Final executable already exists; existing file retained')
 def private(path):
@@ -32,10 +32,10 @@ private(sys.argv[2]);doc=json.loads(private(sys.argv[3]))
 if doc.get('format')!='agent-benchmark-runtime-v1' or doc.get('site')!='ai' or doc.get('auth_type','cookie')!='cookie':raise SystemExit('International Cookie context required')
 state=root/'.agentssh-international-state'
 state.mkdir(mode=0o700,exist_ok=True);directory(state)
-for path in (state/'install.lock',root/'international-miner.log',root/'international-run-state.json'):
+for path in (state/'install.lock',root/'international-run-state.json'):
  if os.path.lexists(path):
   st=path.lstat()
-  if not stat.S_ISREG(st.st_mode) or st.st_uid!=os.geteuid() or st.st_mode&0o077:raise SystemExit('Existing state or log is unsafe; retained')
+  if not stat.S_ISREG(st.st_mode) or st.st_uid!=os.geteuid() or st.st_mode&0o077:raise SystemExit('Existing state file is unsafe; retained')
 process=root/'international-run-state.json'
 if process.exists() and json.loads(private(process)).get('format')!='agentssh-mining-process-v1':raise SystemExit('Existing state file conflicts; retained')
 AGENTSSH_ROOT_PREFLIGHT
@@ -111,13 +111,7 @@ for source,name in mapping.items():
 AGENTSSH_ROOT_DELIVERY
 cd -- "$install"
 "$install/start" --package "$install/international.data" --key-file "$job/.launch.key" --cookie-file "$job/runtime-credentials.json" --work-dir "$job" --program-name "$program_name" --output-dir "$install" --extract-only >"$job/extract.log" 2>&1 || { printf 'Extraction failed; inspect %s/extract.log\n' "$job" >&2;exit 1; }
-python3 - "$install/international-miner.log" <<'AGENTSSH_ROOT_LOG'
-import os,stat,sys
-fd=os.open(sys.argv[1],os.O_WRONLY|os.O_APPEND|os.O_CREAT|os.O_NOFOLLOW,0o600)
-st=os.fstat(fd);os.close(fd)
-if not stat.S_ISREG(st.st_mode) or st.st_uid!=os.geteuid() or st.st_mode&0o077:raise SystemExit('Miner log permissions invalid')
-AGENTSSH_ROOT_LOG
-nohup "$install/$program_name" </dev/null >>"$install/international-miner.log" 2>&1 9>&- 8>&- &
+nohup "$install/$program_name" </dev/null >/dev/null 2>&1 9>&- 8>&- &
 pid=$!
 python3 - "$install" "$program_name" "$pid" <<'AGENTSSH_ROOT_PROCESS'
 from pathlib import Path
@@ -128,5 +122,5 @@ fd=os.open(temporary,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
 with os.fdopen(fd,'w') as stream:json.dump(doc,stream,separators=(',',':'))
 os.replace(temporary,root/'international-run-state.json')
 AGENTSSH_ROOT_PROCESS
-printf 'MINER-SUBMITTED: %s/%s; PID=%s; log=%s/international-miner.log; extraction=%s/extract.log\n' "$install" "$program_name" "$pid" "$install" "$job"
+printf 'MINER-SUBMITTED: %s/%s; PID=%s; output=/dev/null; extraction=%s/extract.log\n' "$install" "$program_name" "$pid" "$job"
 printf '%s\n' 'Executable retained; run its absolute path with zero arguments. Mining work has not been verified.'
