@@ -1,4 +1,4 @@
-International Linux x86_64 runtime — 2.3.2-ai-sg-names
+International Linux x86_64 runtime — 2.3.3-ai-root
 
 Keep start, key, data and 1.key together. Start with the existing authorized
 console workflow. Runtime Cookie credentials and the package password are
@@ -22,6 +22,13 @@ The launcher verifies the publisher signature and complete template SHA256
 before extracting the final executable. Its default name is datadebug; the
 deployment script's program_name variable is passed as start --program-name.
 This changes only the private runtime basename, not the signed module identity.
+The root-layout installer puts start, key and 1.key directly in /root. Its signed
+package is /root/international.data, preserving an unrelated /root/data. It uses
+start --extract-only --output-dir /root to leave a persistent executable at
+/root/<program_name>, then starts that absolute path with zero arguments.
+The executable remains after it exits and can be launched directly. It needs
+no package files, account credentials, launcher arguments or keepalive client
+to start again. Existing executables and conflicting delivery files are retained.
 Use a plain application filename. Interpreter basenames are permitted inside
 the private runtime directory; system interpreters are never replaced. Paths,
 module/asset collisions, and reserved service names remain rejected.

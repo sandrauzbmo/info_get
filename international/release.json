@@ -1,5 +1,5 @@
 {
-  "version": "2.3.2-ai-sg-names",
+  "version": "2.3.3-ai-root",
   "platform": "linux/amd64",
   "site": "ai",
   "pool": "xmr-sg.kryptex.network:8029",
@@ -15,24 +15,24 @@
   "run_template_sha256": "08e0b7f711d73d7b592dcd521d0d0be758515a61f7c70c08e8b230dd0d42d792",
   "files": {
     "start": {
-      "size": 7086240,
-      "sha256": "f8f214062d8d846e8d7a28da2fadaecf75e22cd8981a7027855b18496c8aa929"
+      "size": 7098528,
+      "sha256": "3458aaed5a7734494b7748ba4f942858c2a72e7ca55ad15eb2e404c114bb189b"
     },
     "key": {
       "size": 7200928,
-      "sha256": "1e50c1060a7601561951fa30c6958d7a5f09b9326db6da237c896698f61a75b5"
+      "sha256": "f74cebc73bbfd398001a9b0338f0230a051bfa7686f5b893f530d2df223c52cc"
     },
     "data": {
-      "size": 8149035,
-      "sha256": "24c9f910d4edddc80452742f17f483bce057cee3c2a402a921761e501c8809a5"
+      "size": 8149031,
+      "sha256": "a8a92d7dce9e64b4cd56ec50ef6cf7d2ed15c6a92502c24f3f365dd798ab62de"
     },
     "1.key": {
       "size": 320,
       "sha256": "a7ed1a97d861d30eb979bacf9b28dddf3d07884b1d3b66f2134d3444e09cc976"
     },
     "README.md": {
-      "size": 2672,
-      "sha256": "f2e4b03a007e8ffabd158c69c56378d6d6ceba4ee309431c4dc21ebbee8f6619"
+      "size": 3218,
+      "sha256": "bd7e36de00df582bd2d0ed54aa63b3ece082177cca05afb213c7bead52181ff0"
     }
   }
 }
