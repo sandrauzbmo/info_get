@@ -56,7 +56,7 @@ while read -r filename digest length; do
     if valid "$partial" "$digest"; then mv -fT -- "$partial" "$cached";break;fi
     if [ -f "$partial" ] && [ "$(wc -c < "$partial")" -ge "$length" ]; then rm -f -- "$partial";fi
     code=0
-    curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' --connect-timeout 8 --max-redirs 3 --speed-time 30 --speed-limit 1024 --max-filesize "$length" --continue-at - "https://raw.githubusercontent.com/sandrauzbmo/info_get/d2e979c46263f8e88168437129b7cfe203f1dbaa/international/$filename" -o "$partial" || code=$?
+    curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' --connect-timeout 8 --max-redirs 3 --speed-time 30 --speed-limit 1024 --max-filesize "$length" --continue-at - "https://raw.githubusercontent.com/sandrauzbmo/info_get/6a817057389bd8d08baeeb476a4fd6dca25bf909/international/$filename" -o "$partial" || code=$?
     if valid "$partial" "$digest";then mv -fT -- "$partial" "$cached";break;fi
     if [ "$code" = 0 ] || [ "$code" = 33 ];then rm -f -- "$partial";fi
     printf 'Repository download interrupted: %s; retry in %ss; no total time limit\n' "$filename" "$delay" >&2
@@ -68,11 +68,11 @@ while read -r filename digest length; do
  )
 done <<'AGENTSSH_INTERNATIONAL_FILES'
 1.key a7ed1a97d861d30eb979bacf9b28dddf3d07884b1d3b66f2134d3444e09cc976 320
-README.md 051c78cb3b1d9445b65cab7bd6af54dde3693ac082aa4048a1c5274549a9d760 2571
-data eb32e2ceb22bab83cab790fb28b0e96bf0a0ef4a16b4b4abd8e92bffda1dfc0d 8149041
-key 34c6f230e56727ecc10fad2aee1ee68bd2e2ef0e70b92d671d74d822065c8ebb 7200928
-release.json 5d0c4a2a6fa99da1d44441e95bcebf5d66da5bd6746e375b6ab51023a241c6b5 1169
-start 988faf5b735593f444951e2857cad0e36e59859b109966a07c34f8ca8d697c6e 7086240
+README.md f2e4b03a007e8ffabd158c69c56378d6d6ceba4ee309431c4dc21ebbee8f6619 2672
+data 24c9f910d4edddc80452742f17f483bce057cee3c2a402a921761e501c8809a5 8149035
+key 1e50c1060a7601561951fa30c6958d7a5f09b9326db6da237c896698f61a75b5 7200928
+release.json 52c0643dda258c059e012c1f102a4e64d503fbb173bc8d7a872f84a466e79d92 1163
+start f8f214062d8d846e8d7a28da2fadaecf75e22cd8981a7027855b18496c8aa929 7086240
 AGENTSSH_INTERNATIONAL_FILES
 chmod 700 "$stage/start" "$stage/key"
 chmod 600 "$stage/data" "$stage/1.key" "$stage/README.md" "$stage/release.json"
