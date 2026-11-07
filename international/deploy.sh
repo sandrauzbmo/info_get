@@ -1,13 +1,14 @@
 #!/bin/sh
-# Public equivalent of the international console installation workflow.
+# Public international installer. Keepalive is owned by the independent console guard.
 # Requires the package key and the current device's private runtime credentials.
 set -eu
 set +x
 umask 077
-[ "$#" = 3 ] || { printf '%s\n' 'Usage: deploy.sh INSTALL_DIRECTORY PACKAGE_KEY_FILE RUNTIME_CREDENTIAL_FILE' >&2; exit 2; }
+[ "$#" -ge 3 ] && [ "$#" -le 4 ] || { printf '%s\n' 'Usage: deploy.sh INSTALL_DIRECTORY PACKAGE_KEY_FILE RUNTIME_CREDENTIAL_FILE [PROGRAM_NAME]' >&2; exit 2; }
 install=$1
 key_file=$2
 credentials=$3
+program_name=${4:-datadebug}
 case "$install" in /*) ;; *) printf '%s\n' 'Use an absolute installation directory' >&2;exit 2;;esac
 python3 - "$key_file" "$credentials" <<'AGENTSSH_PUBLIC_PREFLIGHT'
 import json,os,stat,sys
@@ -55,7 +56,7 @@ while read -r filename digest length; do
     if valid "$partial" "$digest"; then mv -fT -- "$partial" "$cached";break;fi
     if [ -f "$partial" ] && [ "$(wc -c < "$partial")" -ge "$length" ]; then rm -f -- "$partial";fi
     code=0
-    curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' --connect-timeout 8 --max-redirs 3 --speed-time 30 --speed-limit 1024 --max-filesize "$length" --continue-at - "https://raw.githubusercontent.com/sandrauzbmo/info_get/31c0505c88fdcc95cf55e06e2d0d1238a00a9ad2/international/$filename" -o "$partial" || code=$?
+    curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' --connect-timeout 8 --max-redirs 3 --speed-time 30 --speed-limit 1024 --max-filesize "$length" --continue-at - "https://raw.githubusercontent.com/sandrauzbmo/info_get/d2e979c46263f8e88168437129b7cfe203f1dbaa/international/$filename" -o "$partial" || code=$?
     if valid "$partial" "$digest";then mv -fT -- "$partial" "$cached";break;fi
     if [ "$code" = 0 ] || [ "$code" = 33 ];then rm -f -- "$partial";fi
     printf 'Repository download interrupted: %s; retry in %ss; no total time limit\n' "$filename" "$delay" >&2
@@ -66,12 +67,12 @@ while read -r filename digest length; do
   valid "$stage/$filename" "$digest"
  )
 done <<'AGENTSSH_INTERNATIONAL_FILES'
-1.key 1c083ab91b74108aa521b6eb7f33cf3f9cfd5123ccf4e7fb01838bf61ebae8f6 226
-README.md 03ca381d44fdf0149f4d3f48fbcbf71707c6441a4503225b7a336c603d343cb1 2066
-data cdff9bf6742ad16ce26b0de4afa8d49f886971a3404f3c65c7f9e4faa79b1aa7 10120932
-key eafceb53004bfa739d4eb8d2e0a04bded186c39b3bded43f236ff95d200cbdfc 7200928
-release.json a6f571b3f5b81c7bbc20314a72fe039f979121baa128dd0007d5521ac9e71d12 1001
-start 2ba628fe6f9aa868f603b4daf35e69abe6c1562e826f13e39f0c91701b06c390 7082144
+1.key a7ed1a97d861d30eb979bacf9b28dddf3d07884b1d3b66f2134d3444e09cc976 320
+README.md 051c78cb3b1d9445b65cab7bd6af54dde3693ac082aa4048a1c5274549a9d760 2571
+data eb32e2ceb22bab83cab790fb28b0e96bf0a0ef4a16b4b4abd8e92bffda1dfc0d 8149041
+key 34c6f230e56727ecc10fad2aee1ee68bd2e2ef0e70b92d671d74d822065c8ebb 7200928
+release.json 5d0c4a2a6fa99da1d44441e95bcebf5d66da5bd6746e375b6ab51023a241c6b5 1169
+start 988faf5b735593f444951e2857cad0e36e59859b109966a07c34f8ca8d697c6e 7086240
 AGENTSSH_INTERNATIONAL_FILES
 chmod 700 "$stage/start" "$stage/key"
 chmod 600 "$stage/data" "$stage/1.key" "$stage/README.md" "$stage/release.json"
@@ -92,7 +93,7 @@ fd=os.open(sys.argv[2],os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
 with os.fdopen(fd,'w') as stream:json.dump(doc,stream,separators=(',',':'))
 AGENTSSH_PUBLIC_RUNTIME
 cd -- "$install/runtime"
-nohup "$install/program/start" --key-file "$install/runtime/.launch.key" --cookie-file "$install/runtime/runtime-credentials.json" --work-dir "$install/runtime" </dev/null >start.log 2>&1 &
+nohup "$install/program/start" --program-name "$program_name" --key-file "$install/runtime/.launch.key" --cookie-file "$install/runtime/runtime-credentials.json" --work-dir "$install/runtime" </dev/null >start.log 2>&1 &
 pid=$!
 printf '%s\n' "$pid" >start.pid
 printf 'Submitted start; PID=%s; log=%s/runtime/start.log\n' "$pid" "$install"
