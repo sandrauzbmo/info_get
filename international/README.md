@@ -1,4 +1,4 @@
-International Linux x86_64 runtime — 2.3.1-ai-sg-independent
+International Linux x86_64 runtime — 2.3.2-ai-sg-names
 
 Keep start, key, data and 1.key together. Start with the existing authorized
 console workflow. Runtime Cookie credentials and the package password are
@@ -22,8 +22,10 @@ The launcher verifies the publisher signature and complete template SHA256
 before extracting the final executable. Its default name is datadebug; the
 deployment script's program_name variable is passed as start --program-name.
 This changes only the private runtime basename, not the signed module identity.
-Use a plain application filename; paths, module/asset collisions, and system
-interpreter/service names are rejected. Every extraction replaces only
+Use a plain application filename. Interpreter basenames are permitted inside
+the private runtime directory; system interpreters are never replaced. Paths,
+module/asset collisions, and reserved service names remain rejected.
+Every extraction replaces only
 the 54-character field in the non-executable ELF section .agent_instance with
 27 cryptographically random bytes encoded as hexadecimal (216 bits).
 The surrounding record is ASRUN_INSTANCE_V1:<54 characters>:END_ASRUN_INSTANCE.
